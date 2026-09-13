@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Danish Master App - Module 1</title>
+    <style>
+        :root {
+            --bg-color: #e8f4fd; 
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --btn-mint: #b5ead7;
+            --btn-mint-hover: #9cd5c1;
+            --btn-pink: #ffdac1;
+            --btn-pink-hover: #ffcba4;
+            --correct: #c7ceea; 
+            --incorrect: #ffb7b2; 
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .screen {
+            display: none;
+            background-color: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .menu-btn {
+            background-color: var(--btn-mint);
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #444;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn:hover {
+            background-color: var(--btn-mint-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .back-btn {
+            background-color: #eee;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .score-board {
+            font-size: 0.95rem;
+            color: #888;
+            font-weight: bold;
+        }
+
+        .question-box {
+            margin-bottom: 25px;
+            padding: 25px 15px;
+            border: 2px dashed var(--btn-pink);
+            border-radius: 15px;
+            background-color: #fafafa;
+            position: relative;
+        }
+
+        .dict-link {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 3px dotted var(--btn-mint-hover);
+            transition: background-color 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+
+        .dict-link:hover {
+            background-color: var(--btn-mint);
+            color: #000;
+            border-radius: 5px;
+        }
+
+        .speak-btn {
+            background-color: #ffdac1;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #444;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .options-grid.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        button.option-btn {
+            background-color: var(--btn-mint);
+            border: none;
+            padding: 18px 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #444;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+        }
+
+        button.option-btn:disabled {
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.8;
+        }
+
+        .correct-btn {
+            background-color: var(--correct) !important;
+            color: #000 !important;
+            border: 2px solid #4CAF50 !important;
+        }
+
+        .incorrect-btn {
+            background-color: var(--incorrect) !important;
+            color: #000 !important;
+            border: 2px solid #F44336 !important;
+        }
+
+        .feedback-text {
+            min-height: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .next-btn {
+            background-color: #e2d9f3;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #444;
+            display: none;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .explanation-box {
+            display: none;
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #444;
+        }
+
+        .q-display-large { font-size: 2.5rem; font-weight: bold; color: #222; }
+        .q-display-medium { font-size: 1.3rem; font-weight: bold; color: #222; line-height: 1.4; }
+        .q-english { font-size: 0.95rem; color: #666; font-style: italic; margin-top: 8px; }
+        .q-digital { font-size: 2rem; font-weight: bold; font-family: 'Courier New', Courier, monospace; background-color: #eee; display: inline-block; padding: 5px 15px; border-radius: 10px; margin-top: 10px; }
+
+        @media (min-width: 480px) {
+            .menu-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MAIN MENU -->
+<div id="screen-menu" class="screen active">
+    <h1>I ❤️ DK - Module 1</h1>
+    <p style="color: #666; margin-bottom: 25px;">Select a topic. Each session runs 50 rounds.</p>
+    <div class="menu-grid">
+        <button class="menu-btn" onclick="startGame('words')">Question Words</button>
+        <button class="menu-btn" onclick="startGame('numbers')">Numbers & Math</button>
+        <button class="menu-btn" onclick="startGame('articles')">En eller Et?</button>
+        <button class="menu-btn" style="background-color: var(--btn-pink);" onclick="startGame('time')">Hvad er klokken?</button>
+    </div>
+</div>
+
+<!-- GAME TEMPLATES -->
+<div id="screen-words" class="screen">
+    <div class="nav-header">
+        <button class="back-btn" onclick="showMenu()">← Menu</button>
+        <div class="score-board"><span id="words-counter"></span> | Score: <span id="words-score"></span></div>
+    </div>
+    <div class="question-box">
+        <div class="q-display-medium" id="words-danish"></div>
+        <div class="q-english" id="words-english"></div>
+        <button class="speak-btn" id="words-speak" onclick="speakWords()">🔊 Lyt</button>
+    </div>
+    <div class="options-grid" id="words-options"></div>
+    <div class="feedback-text" id="words-feedback"></div>
+    <div class="explanation-box" id="words-explanation"></div>
+    <button class="next-btn" id="words-next" onclick="nextWords()">Next</button>
+</div>
+
+<div id="screen-numbers" class="screen">
+    <div class="nav-header">
+        <button class="back-btn" onclick="showMenu()">← Menu</button>
+        <div class="score-board"><span id="numbers-counter"></span> | Score: <span id="numbers-score"></span></div>
+    </div>
+    <div class="question-box">
+        <div class="q-display-large" id="numbers-display"></div>
+        <button class="speak-btn" id="numbers-speak" onclick="speakNumbers()">🔊 Lyt</button>
+    </div>
+    <div class="options-grid" id="numbers-options"></div>
+    <div class="feedback-text" id="numbers-feedback"></div>
+    <div class="explanation-box" id="numbers-explanation"></div>
+    <button class="next-btn" id="numbers-next" onclick="nextNumbers()">Next</button>
+</div>
+
+<div id="screen-articles" class="screen">
+    <div class="nav-header">
+        <button class="back-btn" onclick="showMenu()">← Menu</button>
+        <div class="score-board"><span id="articles-counter"></span> | Score: <span id="articles-score"></span></div>
+    </div>
+    <div class="question-box">
+        <div class="q-display-large" id="articles-display"></div>
+        <button class="speak-btn" id="articles-speak" onclick="speakArticles()">🔊 Lyt</button>
+    </div>
+    <div class="options-grid full-width" id="articles-options">
+        <button id="btn-en" class="option-btn" style="background-color: var(--btn-pink);" onclick="checkArticles(this, 'en')">En</button>
+        <button id="btn-et" class="option-btn" onclick="checkArticles(this, 'et')">Et</button>
+    </div>
+    <div class="feedback-text" id="articles-feedback"></div>
+    <div class="explanation-box" id="articles-explanation"></div>
+    <button class="next-btn" id="articles-next" onclick="nextArticles()">Next</button>
+</div>
+
+<div id="screen-time" class="screen">
+    <div class="nav-header">
+        <button class="back-btn" onclick="showMenu()">← Menu</button>
+        <div class="score-board"><span id="time-counter"></span> | Score: <span id="time-score"></span></div>
+    </div>
+    <div class="question-box">
+        <div class="q-display-medium" id="time-danish"></div>
+        <div class="q-english" id="time-english"></div>
+        <div class="q-digital" id="time-digital"></div>
+        <br><button class="speak-btn" id="time-speak" onclick="speakTime()">🔊 Lyt</button>
+    </div>
+    <div class="options-grid full-width" id="time-options"></div>
+    <div class="feedback-text" id="time-feedback"></div>
+    <div class="explanation-box" id="time-explanation"></div>
+    <button class="next-btn" id="time-next" onclick="nextTime()">Next</button>
+</div>
+
+<script>
+    // --- GLOBAL AUDIO & UTILS ---
+    let danishVoice = null;
+    function loadVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        danishVoice = voices.find(v => v.lang.includes('da') || v.lang === 'da-DK' || v.name.includes('Danish'));
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
+
+    function playAudio(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'da-DK';
+        if (danishVoice) utterance.voice = danishVoice;
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function shuffle(array) {
+        let curId = array.length;
+        while (0 !== curId) {
+            let randId = Math.floor(Math.random() * curId);
+            curId -= 1;
+            let tmp = array[curId];
+            array[curId] = array[randId];
+            array[randId] = tmp;
+        }
+        return array;
+    }
+
+    function linkify(sentence) {
+        return sentence.split(' ').map(word => {
+            if (word.includes("___") || word.includes("<") || word.includes("🎧")) return word;
+            const cleanWord = word.replace(/[^\wæøåÆØÅ-]/g, '').toLowerCase();
+            if(cleanWord.length > 0) return `<a href="https://ordnet.dk/ddo/ordbog?query=${cleanWord}" target="_blank" class="dict-link">${word}</a>`;
+            return word;
+        }).join(' ');
+    }
+
+    function linkifyRaw(sentence) {
+        return sentence.split(' ').map(word => {
+            const cleanWord = word.replace(/[^\wæøåÆØÅ-]/g, '').toLowerCase();
+            if(cleanWord.length > 0) return `<span onclick="window.open('https://ordnet.dk/ddo/ordbog?query=${cleanWord}', '_blank'); event.stopPropagation();" class="dict-link">${word}</span>`;
+            return word;
+        }).join(' ');
+    }
+
+    function showMenu() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-menu').classList.add('active');
+        window.speechSynthesis.cancel();
+    }
+
+    function startGame(gameId) {
+        if ('speechSynthesis' in window) playAudio(""); // Unlock audio on mobile
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`screen-${gameId}`).classList.add('active');
+        
+        if(gameId === 'words') initWords();
+        if(gameId === 'numbers') initNumbers();
+        if(gameId === 'articles') initArticles();
+        if(gameId === 'time') initTime();
+    }
+    
+    const TOTAL_ROUNDS = 50; // Set to 50 for full study sessions
+
+
+    // --- 1. QUESTION WORDS (H-WORDS) ---
+    const allQWords = ["Hvad", "Hvem", "Hvorfor", "Hvordan", "Hvis", "Hvilken(t)", "Hvor", "Hvor + adjective", "Hvornår"];
+    const wordsDataList = [
+        { d: "___ hedder du?", e: "(What is your name?)", a: "Hvad" },
+        { d: "___ kommer du fra?", e: "(Where do you come from?)", a: "Hvor" },
+        { d: "___ arbejder i Billund?", e: "(Who works in Billund?)", a: "Hvem" },
+        { d: "___ udtaler man 'halvtreds'?", e: "(How do you pronounce 'halvtreds'?)", a: "Hvordan" },
+        { d: "___ lærer du dansk?", e: "(Why are you learning Danish?)", a: "Hvorfor" },
+        { d: "___ bærbar computer bruger du?", e: "(Which laptop do you use?)", a: "Hvilken(t)" },
+        { d: "___ bor du i Danmark?", e: "(Where do you live in Denmark?)", a: "Hvor" },
+        { d: "___ kaffemaskine er det?", e: "(Whose coffee machine is it?)", a: "Hvis" },
+        { d: "___ mange timer sover du?", e: "(How many hours do you sleep?)", a: "Hvor + adjective" },
+        { d: "___ møder du på arbejde?", e: "(When do you arrive at work?)", a: "Hvornår" },
+        { d: "___ laver du i weekenden?", e: "(What do you do on the weekend?)", a: "Hvad" },
+        { d: "___ skal du spise frokost med?", e: "(Who are you eating lunch with?)", a: "Hvem" },
+        { d: "___ cykler du til campus?", e: "(How do you bike to campus?)", a: "Hvordan" },
+        { d: "___ crasher Maya altid?", e: "(Why does Maya always crash?)", a: "Hvorfor" },
+        { d: "___ program er bedst til normal maps?", e: "(Which program is best for normal maps?)", a: "Hvilken(t)" },
+        { d: "___ ligger supermarkedet?", e: "(Where is the supermarket?)", a: "Hvor" },
+        { d: "___ tur er det til at købe kaffe?", e: "(Whose turn is it to buy coffee?)", a: "Hvis" },
+        { d: "___ tit koder du i JavaScript?", e: "(How often do you code in JavaScript?)", a: "Hvor + adjective" },
+        { d: "___ kører bussen?", e: "(When does the bus leave?)", a: "Hvornår" },
+        { d: "___ koster en returbillet?", e: "(What does a return ticket cost?)", a: "Hvad" },
+        { d: "___ designede denne shader?", e: "(Who designed this shader?)", a: "Hvem" },
+        { d: "___ laver man 炊き込みご飯?", e: "(How do you make takikomi gohan?)", a: "Hvordan" },
+        { d: "___ tager renderen så lang tid?", e: "(Why does the render take so long?)", a: "Hvorfor" },
+        { d: "___ skærm foretrækker du?", e: "(Which monitor do you prefer?)", a: "Hvilken(t)" },
+        { d: "___ kan jeg finde en god bager?", e: "(Where can I find a good baker?)", a: "Hvor" },
+        { d: "___ GA401IV er dette?", e: "(Whose GA401IV is this?)", a: "Hvis" },
+        { d: "___ lang tid tager det at bage teksturer?", e: "(How long does it take to bake textures?)", a: "Hvor + adjective" },
+        { d: "___ lukker kantinen?", e: "(When does the canteen close?)", a: "Hvornår" },
+        { d: "___ kigger du på?", e: "(What are you looking at?)", a: "Hvad" },
+        { d: "___ er din chef?", e: "(Who is your boss?)", a: "Hvem" },
+        { d: "___ fungerer den nye app?", e: "(How does the new app work?)", a: "Hvordan" },
+        { d: "___ valgte du at flytte?", e: "(Why did you choose to move?)", a: "Hvorfor" },
+        { d: "___ sprog koder du web-scraperen i?", e: "(Which language are you coding the web-scraper in?)", a: "Hvilken(t)" },
+        { d: "___ køber du asiatiske varer?", e: "(Where do you buy Asian groceries?)", a: "Hvor" },
+        { d: "___ jakke hænger der?", e: "(Whose jacket is hanging there?)", a: "Hvis" },
+        { d: "___ meget koster LatteGo 5500?", e: "(How much does the LatteGo 5500 cost?)", a: "Hvor + adjective" },
+        { d: "___ startede du hos LEGO Group?", e: "(When did you start at the LEGO Group?)", a: "Hvornår" },
+        { d: "___ er din yndlingsfarve?", e: "(What is your favorite color?)", a: "Hvad" },
+        { d: "___ vandt i League of Legends?", e: "(Who won in League of Legends?)", a: "Hvem" },
+        { d: "___ bruger man ZBrush på en tablet?", e: "(How do you use ZBrush on a tablet?)", a: "Hvordan" },
+        { d: "___ opdaterer Windows nu?", e: "(Why is Windows updating now?)", a: "Hvorfor" },
+        { d: "___ version af Houdini bruger vi?", e: "(Which version of Houdini are we using?)", a: "Hvilken(t)" },
+        { d: "___ er mit viskelæder?", e: "(Where is my eraser?)", a: "Hvor" },
+        { d: "___ tur er det til at vaske op?", e: "(Whose turn is it to do the dishes?)", a: "Hvis" },
+        { d: "___ hurtigt kører scriptet?", e: "(How fast does the script run?)", a: "Hvor + adjective" },
+        { d: "___ skal vi mødes?", e: "(When should we meet?)", a: "Hvornår" },
+        { d: "___ betyder dette ord?", e: "(What does this word mean?)", a: "Hvad" },
+        { d: "___ skrev koden til trackeren?", e: "(Who wrote the code for the tracker?)", a: "Hvem" },
+        { d: "___ bager man brød?", e: "(How do you bake bread?)", a: "Hvordan" },
+        { d: "___ er vejret altid dårligt?", e: "(Why is the weather always bad?)", a: "Hvorfor" }
+    ];
+    let wIdx = 0, wScore = 0, wData = [], wAns = false;
+
+    function getQWordTip(word) {
+        const tips = {
+            "Hvad": "<strong>Hvad (What):</strong> Asking for a thing, action, or description.",
+            "Hvem": "<strong>Hvem (Who):</strong> Asking for a specific person.",
+            "Hvorfor": "<strong>Hvorfor (Why):</strong> Asking for a reason.",
+            "Hvordan": "<strong>Hvordan (How):</strong> Asking for a method, process, or manner.",
+            "Hvor": "<strong>Hvor (Where):</strong> Asking for a spatial location.",
+            "Hvornår": "<strong>Hvornår (When):</strong> Asking for a specific time or date.",
+            "Hvilken(t)": "<strong>Hvilken / Hvilket (Which):</strong> Asking to select from a specific group.",
+            "Hvis": "<strong>Hvis (Whose):</strong> Asking for possession.",
+            "Hvor + adjective": "<strong>Hvor + Adjective (How [much/fast/long]):</strong> 'Hvor' pairs directly with adjectives to measure degree or extent."
+        };
+        return tips[word] || "";
+    }
+
+    function initWords() {
+        wData = shuffle([...wordsDataList]).slice(0, TOTAL_ROUNDS);
+        wIdx = 0; wScore = 0;
+        loadWords();
+    }
+    function loadWords() {
+        wAns = false;
+        document.getElementById('words-feedback').innerText = "";
+        document.getElementById('words-explanation').style.display = "none";
+        document.getElementById('words-next').style.display = "none";
+        document.getElementById('words-options').innerHTML = "";
+        
+        const q = wData[wIdx];
+        document.getElementById('words-danish').innerHTML = linkify(q.d);
+        document.getElementById('words-english').innerText = q.e;
+        document.getElementById('words-counter').innerText = `${wIdx + 1}/${wData.length}`;
+        document.getElementById('words-score').innerText = wScore;
+
+        let opts = [q.a, ...shuffle(allQWords.filter(w => w !== q.a)).slice(0,3)];
+        shuffle(opts).forEach(opt => {
+            let b = document.createElement('button');
+            b.className = 'option-btn'; b.innerText = opt;
+            b.onclick = () => checkWords(b, opt, q.a);
+            document.getElementById('words-options').appendChild(b);
+        });
+    }
+    function checkWords(btn, sel, cor) {
+        wAns = true;
+        document.querySelectorAll('#words-options button').forEach(b => b.disabled = true);
+        let q = wData[wIdx];
+        let fullS = q.d.replace("___", cor === "Hvor + adjective" ? "Hvor" : cor);
+        document.getElementById('words-danish').innerHTML = linkify(fullS);
+
+        if(sel === cor) { btn.classList.add('correct-btn'); wScore++; } 
+        else {
+            btn.classList.add('incorrect-btn');
+            document.querySelectorAll('#words-options button').forEach(b => { if(b.innerText===cor) b.classList.add('correct-btn'); });
+        }
+        document.getElementById('words-score').innerText = wScore;
+        
+        document.getElementById('words-explanation').innerHTML = getQWordTip(cor);
+        document.getElementById('words-explanation').style.display = "block";
+        document.getElementById('words-next').style.display = "block";
+        speakWords();
+    }
+    function speakWords() {
+        let q = wData[wIdx];
+        let txt = wAns ? q.d.replace("___", q.a === "Hvor + adjective" ? "Hvor" : q.a) : q.d.replace("___", "");
+        playAudio(txt);
+    }
+    function nextWords() {
+        if(++wIdx < wData.length) loadWords();
+        else document.getElementById('words-danish').innerHTML = "Flot klaret!";
+    }
+
+
+    // --- 2. NUMBERS (DYNAMIC GENERATOR) ---
+    const units = ["nul", "en", "to", "tre", "fire", "fem", "seks", "syv", "otte", "ni"];
+    const teens = ["ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten"];
+    const tens = ["", "", "tyve", "tredive", "fyrre", "halvtreds", "tres", "halvfjerds", "firs", "halvfems"];
+    
+    function getNumWord(num) {
+        if(num < 10) return units[num];
+        if(num < 20) return teens[num-10];
+        if(num === 100) return "hundrede";
+        let u = num%10, t = Math.floor(num/10);
+        return u === 0 ? tens[t] : units[u] + "og" + tens[t];
+    }
+    
+    function getNumTip(num) {
+        if(num < 10) return `<strong>${num}:</strong> Basic numbers 0-9 act as building blocks.`;
+        if(num < 20) return `<strong>${num}:</strong> The 'teens' (10-19) are irregular and must be memorized individually.`;
+        if(num === 100) return `<strong>100:</strong> Et hundrede.`;
+        
+        let u = num%10, t = Math.floor(num/10);
+        if(t < 5) return `<strong>${num}:</strong> Tens under 50 end in '-ve' or '-re'. Notice the ones digit always comes first in Danish (e.g. ${u}-og-${t*10}).`;
+        return `<strong>${num}:</strong> Danish uses a base-20 (vigesimal) counting system above 40. The ones digit (${units[u]}) is glued to the tens with 'og'.`;
+    }
+
+    let nIdx = 0, nScore = 0, nCur = {};
+
+    function initNumbers() { nIdx = 0; nScore = 0; loadNumbers(); }
+    function loadNumbers() {
+        document.getElementById('numbers-feedback').innerText = "";
+        document.getElementById('numbers-explanation').style.display = "none";
+        document.getElementById('numbers-next').style.display = "none";
+        document.getElementById('numbers-options').innerHTML = "";
+        
+        let tNum = Math.floor(Math.random() * 99) + 1;
+        let tWord = getNumWord(tNum);
+        let mode = Math.floor(Math.random() * 3); 
+        nCur = { num: tNum, word: tWord, mode: mode };
+        
+        let isOptTxt = (mode === 0);
+        let opts = [isOptTxt ? tWord : tNum.toString()];
+        while(opts.length < 4) {
+            let wNum = tNum + ((Math.floor(Math.random()*5)+1)*10 * (Math.random()>0.5?1:-1));
+            if(wNum<1) wNum+=40; if(wNum>100) wNum-=40;
+            if(Math.random()>0.7) wNum = Math.floor(tNum/10)*10 + (Math.floor(Math.random()*9)+1);
+            let wStr = isOptTxt ? getNumWord(wNum) : wNum.toString();
+            if(!opts.includes(wStr)) opts.push(wStr);
+        }
+        
+        let dsp = document.getElementById('numbers-display');
+        if(mode === 0) dsp.innerHTML = tNum;
+        else if(mode === 1) dsp.innerHTML = linkify(tWord);
+        else { dsp.innerHTML = "🎧"; setTimeout(() => playAudio(tWord), 300); }
+        
+        document.getElementById('numbers-counter').innerText = `${nIdx + 1}/${TOTAL_ROUNDS}`;
+        document.getElementById('numbers-score').innerText = nScore;
+
+        shuffle(opts).forEach(opt => {
+            let b = document.createElement('button');
+            b.className = 'option-btn'; b.innerText = opt;
+            b.onclick = () => checkNumbers(b, opt, isOptTxt ? tWord : tNum.toString());
+            document.getElementById('numbers-options').appendChild(b);
+        });
+    }
+    function checkNumbers(btn, sel, cor) {
+        document.querySelectorAll('#numbers-options button').forEach(b => b.disabled = true);
+        document.getElementById('numbers-display').innerHTML = `${nCur.num} = ${linkify(nCur.word)}`;
+        if(sel === cor) { btn.classList.add('correct-btn'); nScore++; } 
+        else {
+            btn.classList.add('incorrect-btn');
+            document.querySelectorAll('#numbers-options button').forEach(b => { if(b.innerText===cor) b.classList.add('correct-btn'); });
+        }
+        document.getElementById('numbers-score').innerText = nScore;
+        
+        document.getElementById('numbers-explanation').innerHTML = getNumTip(nCur.num);
+        document.getElementById('numbers-explanation').style.display = "block";
+        document.getElementById('numbers-next').style.display = "block";
+        if(nCur.mode !== 2) playAudio(nCur.word);
+    }
+    function speakNumbers() { playAudio(nCur.word); }
+    function nextNumbers() {
+        if(++nIdx < TOTAL_ROUNDS) loadNumbers();
+        else document.getElementById('numbers-display').innerHTML = "Flot!";
+    }
+
+
+    // --- 3. ARTICLES (EN/ET) ---
+    const artDataList = [
+        { w: "mand", a: "en", t: "man", tip: "Living things (people/animals) are almost always 'en'." },
+        { w: "kvinde", a: "en", t: "woman", tip: "Living things (people/animals) are almost always 'en'." },
+        { w: "barn", a: "et", t: "child", tip: "Exception! 'barn' is always 'et'." },
+        { w: "hus", a: "et", t: "house", tip: "Many physical buildings take 'et'." },
+        { w: "bil", a: "en", t: "car", tip: "Everyday transport usually takes 'en'." },
+        { w: "cykel", a: "en", t: "bicycle", tip: "Everyday transport usually takes 'en'." },
+        { w: "tog", a: "et", t: "train", tip: "Exception! A train is always 'et tog'." },
+        { w: "job", a: "et", t: "job", tip: "Common survival word requiring memorization." },
+        { w: "arbejde", a: "et", t: "work", tip: "Like 'et job', the word for work requires memorization." },
+        { w: "computer", a: "en", t: "computer", tip: "Modern English loanwords for tech usually take 'en'." },
+        { w: "skærm", a: "en", t: "monitor", tip: "No specific rule, just memorization." },
+        { w: "tastatur", a: "et", t: "keyboard", tip: "Hardware components often vary. Memorize as 'et'." },
+        { w: "mus", a: "en", t: "mouse", tip: "Living things (and computer peripherals named after them) are 'en'." },
+        { w: "kaffe", a: "en", t: "coffee", tip: "Drinks and liquids usually take 'en'." },
+        { w: "sprog", a: "et", t: "language", tip: "No specific rule. Requires memorization." },
+        { w: "problem", a: "et", t: "problem", tip: "Abstract Greek/Latin roots often end up as 'et'." },
+        { w: "løsning", a: "en", t: "solution", tip: "Nouns ending in '-ning' are always 'en'." },
+        { w: "uddannelse", a: "en", t: "education", tip: "Words ending in '-else' are almost always 'en'." },
+        { w: "universitet", a: "et", t: "university", tip: "Buildings/institutions often take 'et'." },
+        { w: "station", a: "en", t: "station", tip: "Words ending in '-tion' are always 'en'." },
+        { w: "museum", a: "et", t: "museum", tip: "Words ending in '-um' are always 'et'." },
+        { w: "land", a: "et", t: "country", tip: "Requires memorization." },
+        { w: "by", a: "en", t: "city", tip: "Requires memorization." },
+        { w: "lejlighed", a: "en", t: "apartment", tip: "Nouns ending in '-hed' are always 'en'." },
+        { w: "værelse", a: "et", t: "room", tip: "Despite ending in '-else' (usually en), 'et værelse' is a major exception." },
+        { w: "dør", a: "en", t: "door", tip: "Requires memorization." },
+        { w: "vindue", a: "et", t: "window", tip: "Requires memorization." },
+        { w: "bord", a: "et", t: "table", tip: "Requires memorization." },
+        { w: "stol", a: "en", t: "chair", tip: "Requires memorization." },
+        { w: "seng", a: "en", t: "bed", tip: "Requires memorization." },
+        { w: "køkken", a: "et", t: "kitchen", tip: "Rooms in a house often take 'et' (et køkken, et badeværelse)." },
+        { w: "badeværelse", a: "et", t: "bathroom", tip: "Rooms in a house often take 'et'." },
+        { w: "opgave", a: "en", t: "task", tip: "Requires memorization." },
+        { w: "projekt", a: "et", t: "project", tip: "Requires memorization." },
+        { w: "kode", a: "en", t: "code", tip: "Requires memorization." },
+        { w: "script", a: "et", t: "script", tip: "English tech loanwords vary, memorize this one as 'et'." },
+        { w: "fil", a: "en", t: "file", tip: "Requires memorization." },
+        { w: "mappe", a: "en", t: "folder", tip: "Requires memorization." },
+        { w: "program", a: "et", t: "program", tip: "Requires memorization." },
+        { w: "app", a: "en", t: "app", tip: "Modern tech loanwords usually take 'en'." },
+        { w: "telefon", a: "en", t: "phone", tip: "Requires memorization." },
+        { w: "kamera", a: "et", t: "camera", tip: "Requires memorization." },
+        { w: "ven", a: "en", t: "friend", tip: "Living people are almost always 'en'." },
+        { w: "æble", a: "et", t: "apple", tip: "Fruit varies (en banan, et æble). Requires memorization!" },
+        { w: "banan", a: "en", t: "banana", tip: "Fruit varies. Requires memorization." },
+        { w: "brød", a: "et", t: "bread", tip: "Food items vary wildly. Memorize as 'et'." },
+        { w: "ost", a: "en", t: "cheese", tip: "Food items vary wildly. Memorize as 'en'." },
+        { w: "æg", a: "et", t: "egg", tip: "Requires memorization." },
+        { w: "uge", a: "en", t: "week", tip: "Time structures vary (en uge, et år, en måned)." },
+        { w: "år", a: "et", t: "year", tip: "Time structures vary (en uge, et år)." }
+    ];
+    let aIdx = 0, aScore = 0, aData = [], aAns = false;
+    
+    function initArticles() {
+        aData = shuffle([...artDataList]).slice(0, TOTAL_ROUNDS);
+        aIdx = 0; aScore = 0;
+        loadArticles();
+    }
+    function loadArticles() {
+        aAns = false;
+        document.getElementById('articles-feedback').innerText = "";
+        document.getElementById('articles-explanation').style.display = "none";
+        document.getElementById('articles-next').style.display = "none";
+        document.getElementById('btn-en').disabled = false; document.getElementById('btn-et').disabled = false;
+        document.getElementById('btn-en').className = "option-btn"; document.getElementById('btn-et').className = "option-btn";
+        document.getElementById('btn-en').style.backgroundColor = "var(--btn-pink)"; 
+        
+        let q = aData[aIdx];
+        document.getElementById('articles-display').innerHTML = `___ ${linkify(q.w)}`;
+        document.getElementById('articles-counter').innerText = `${aIdx + 1}/${aData.length}`;
+        document.getElementById('articles-score').innerText = aScore;
+    }
+    function checkArticles(btn, sel) {
+        if(aAns) return; aAns = true;
+        document.getElementById('btn-en').disabled = true; document.getElementById('btn-et').disabled = true;
+        let q = aData[aIdx];
+        document.getElementById('articles-display').innerHTML = `${q.a} ${linkify(q.w)}`;
+
+        if(sel === q.a) { btn.classList.add('correct-btn'); aScore++; } 
+        else {
+            btn.classList.add('incorrect-btn');
+            document.getElementById(`btn-${q.a}`).classList.add('correct-btn');
+        }
+        
+        document.getElementById('articles-score').innerText = aScore;
+        document.getElementById('articles-explanation').innerHTML = `<strong>Translation:</strong> ${q.t}<br><br><strong>Tip:</strong> ${q.tip}`;
+        document.getElementById('articles-explanation').style.display = "block";
+        document.getElementById('articles-next').style.display = "block";
+        speakArticles();
+    }
+    function speakArticles() {
+        let q = aData[aIdx];
+        playAudio(aAns ? `${q.a} ${q.w}` : q.w);
+    }
+    function nextArticles() {
+        if(++aIdx < aData.length) loadArticles();
+        else document.getElementById('articles-display').innerHTML = "Færdig!";
+    }
+
+
+    // --- 4. TIME Q&A (DYNAMIC GENERATOR) ---
+    const qPrompts = [
+        { d: "Hvad er klokken?", e: "(What time is it?)", p: "Den er " },
+        { d: "Hvornår kører bussen?", e: "(When does the bus leave?)", p: "Den kører " },
+        { d: "Hvornår starter mødet?", e: "(When does the meeting start?)", p: "Det starter " },
+        { d: "Hvornår har du fri?", e: "(When do you get off work?)", p: "Jeg har fri " },
+        { d: "Hvornår spiser vi?", e: "(When are we eating?)", p: "Vi spiser " }
+    ];
+    
+    function getTimeQuestion() {
+        let h24 = Math.floor(Math.random() * 24);
+        let validMins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        let m = validMins[Math.floor(Math.random() * validMins.length)];
+        
+        let h12 = h24 % 12; 
+        if(h12 === 0) h12 = 12;
+        let nextH12 = (h12 % 12) + 1;
+        
+        let dig = `${h24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        
+        // Convert numbers to Danish string
+        let numStrs = {
+            1:"et", 2:"to", 3:"tre", 4:"fire", 5:"fem", 6:"seks", 7:"syv", 8:"otte", 9:"ni", 10:"ti", 
+            11:"elleve", 12:"tolv", 20:"tyve", 25:"femogtyve"
+        };
+        
+        let ans = "", tip = "";
+        
+        if (m === 0) {
+            ans = `klokken ${numStrs[h12]}`;
+            tip = `<strong>${dig}:</strong> On the hour, simply say 'klokken' followed by the number. (Remember 1:00 is 'et', not 'en').`;
+        } else if (m === 15) {
+            ans = `kvart over ${numStrs[h12]}`;
+            tip = `<strong>${dig}:</strong> 'Kvart over' means 15 minutes past the current hour.`;
+        } else if (m === 30) {
+            ans = `halv ${numStrs[nextH12]}`;
+            tip = `<strong>${dig}:</strong> 'Halv' looks forward! ${dig} is halfway to the next hour (${nextH12}:00), so you say 'halv ${numStrs[nextH12]}'.`;
+        } else if (m === 45) {
+            ans = `kvart i ${numStrs[nextH12]}`;
+            tip = `<strong>${dig}:</strong> 'Kvart i' means 15 minutes to the NEXT hour (${nextH12}:00).`;
+        } else if (m < 30) {
+            ans = `${numStrs[m]} over ${numStrs[h12]}`;
+            tip = `<strong>${dig}:</strong> Use 'over' for minutes past the current hour.`;
+        } else if (m > 30) {
+            ans = `${numStrs[60-m]} i ${numStrs[nextH12]}`;
+            tip = `<strong>${dig}:</strong> Use 'i' for minutes remaining until the NEXT hour (${nextH12}:00).`;
+        }
+        
+        let promptObj = qPrompts[Math.floor(Math.random() * qPrompts.length)];
+        
+        return {
+            qD: promptObj.d, qE: promptObj.e, pfx: promptObj.p,
+            dig: dig, ans: ans, tip: tip
+        };
+    }
+
+    let tIdx = 0, tScore = 0, tCur = {}, tAns = false;
+
+    function initTime() {
+        tIdx = 0; tScore = 0;
+        loadTime();
+    }
+    function loadTime() {
+        tAns = false;
+        document.getElementById('time-feedback').innerText = "";
+        document.getElementById('time-explanation').style.display = "none";
+        document.getElementById('time-next').style.display = "none";
+        document.getElementById('time-options').innerHTML = "";
+        
+        tCur = getTimeQuestion();
+        
+        document.getElementById('time-danish').innerHTML = linkify(tCur.qD);
+        document.getElementById('time-english').innerText = tCur.qE;
+        document.getElementById('time-digital').innerText = tCur.dig;
+        document.getElementById('time-counter').innerText = `${tIdx + 1}/${TOTAL_ROUNDS}`;
+        document.getElementById('time-score').innerText = tScore;
+
+        let corStr = tCur.pfx + tCur.ans + ".";
+        let opts = [corStr];
+        
+        // Generate wrong answers by calling generator again
+        while(opts.length < 4) {
+            let fake = getTimeQuestion();
+            let fakeStr = tCur.pfx + fake.ans + ".";
+            if(!opts.includes(fakeStr)) opts.push(fakeStr);
+        }
+        
+        shuffle(opts).forEach(opt => {
+            let b = document.createElement('button');
+            b.className = 'option-btn';
+            b.innerHTML = linkifyRaw(opt);
+            b.onclick = () => checkTime(b, opt, corStr);
+            document.getElementById('time-options').appendChild(b);
+        });
+    }
+    function checkTime(btn, sel, cor) {
+        tAns = true;
+        document.querySelectorAll('#time-options button').forEach(b => b.disabled = true);
+
+        if(sel === cor) { btn.classList.add('correct-btn'); tScore++; } 
+        else {
+            btn.classList.add('incorrect-btn');
+            document.querySelectorAll('#time-options button').forEach(b => { 
+                if(b.innerHTML.replace(/<[^>]*>?/gm, '') === cor) b.classList.add('correct-btn'); 
+            });
+        }
+        
+        document.getElementById('time-score').innerText = tScore;
+        document.getElementById('time-explanation').innerHTML = tCur.tip;
+        document.getElementById('time-explanation').style.display = "block";
+        document.getElementById('time-next').style.display = "block";
+        speakTime();
+    }
+    function speakTime() {
+        playAudio(tAns ? `${tCur.qD} ... ${tCur.pfx}${tCur.ans}` : tCur.qD);
+    }
+    function nextTime() {
+        if(++tIdx < TOTAL_ROUNDS) loadTime();
+        else document.getElementById('time-danish').innerHTML = "Super godt!";
+    }
+
+</script>
+</body>
+</html>
