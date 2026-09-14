@@ -303,27 +303,32 @@
         { w: "uddannelse", a: "en", t: "education", tip: "Words ending in '-else' are almost always 'en'." }
     ];
 
+    // Expanded Mixed Q&A Pool with newly added Schedule & Routine Sentences
     const mixedDataList = [
         { q: "Hvad er klokken?", a: "Den er halv et." },
         { q: "Hvornår kører toget?", a: "Det kører kvart i ti." },
+        { q: "Hvad tid kommer der Nyhederne på TV2?", a: "Klokken ti om aftenen." },
+        { q: "Hvad tid står du op?", a: "Jeg står op klokken seks." },
+        { q: "Hvad tid går du i seng?", a: "Jeg går i seng ved ellevetiden." },
+        { q: "Hvad tid begynder du at arbejde?", a: "Det varierer meget." },
+        { q: "Hvad tid får du fri?", a: "Jeg får fri klokken fire." },
+        { q: "Hvad tid spiser du morgenmad?", a: "Jeg spiser morgenmad klokken syv." },
+        { q: "Hvad tid skal du af sted om morgenen?", a: "Det kommer an på, hvad tid jeg skal møde." },
+        { q: "Hvad tid møder du om morgenen?", a: "Jeg møder normalt klokken ni." },
+        { q: "Hvad tid har du frokostpause?", a: "Jeg har frokostpause klokken tolv." },
+        { q: "Hvad tid laver du aftensmad?", a: "Jeg laver aftensmad klokken seks." },
+        { q: "Hvad tid spiser du aftensmad?", a: "Vi spiser aftensmad halv syv." },
+        { q: "Hvad betyder 'vist'?", a: "Det betyder 'probably'." },
+        { q: "Hvad betyder 'snart'?", a: "Det betyder 'soon'." },
+        { q: "Hvad betyder 'næsten'?", a: "Det betyder 'almost'." },
         { q: "Hvor arbejder du?", a: "Jeg arbejder i Billund." },
         { q: "Hvor meget koster kaffen?", a: "Den koster femogtyve kroner." },
         { q: "Hvem er din chef?", a: "Det er min chef." },
         { q: "Hvor kommer du fra?", a: "Jeg kommer fra Canada." },
         { q: "Hvilken computer bruger du?", a: "Jeg bruger en Asus ROG." },
         { q: "Hvorfor lærer du dansk?", a: "Fordi jeg bor i Danmark." },
-        { q: "Hvor gammel er du?", a: "Jeg er tredive år gammel." },
-        { q: "Hvad hedder du?", a: "Jeg hedder Andrew." },
-        { q: "Er det et hus?", a: "Ja, det er et stort hus." },
-        { q: "Har du en cykel?", a: "Ja, jeg har en rød cykel." },
-        { q: "Hvad laver du i weekenden?", a: "Jeg slapper af derhjemme." },
-        { q: "Hvordan kommer du på arbejde?", a: "Jeg tager bussen." },
-        { q: "Hvor længe tager det?", a: "Det tager ti minutter." },
-        { q: "Hvad koster billetten?", a: "Den koster tooghalvfjerds kroner." },
-        { q: "Hvem skal du mødes med?", a: "Jeg skal mødes med en ven." },
-        { q: "Hvor ligger supermarkedet?", a: "Det ligger i centrum." },
-        { q: "Hvad betyder dette ord?", a: "Det betyder 'forstår'." },
-        { q: "Hvornår har du fri?", a: "Jeg har fri kvart over fire." }
+        { q: "Hvad laver du i weekenden?", a: "Det kommer an på, hvad jeg skal." },
+        { q: "Hvordan kommer du på arbejde?", a: "Nogle gange tager jeg bussen." }
     ];
 
     // --- GAME ENGINE ---
@@ -427,7 +432,7 @@
 
         let opts = ["en", "et"];
         document.getElementById('game-options').classList.add('full-width');
-        renderOptions(opts, q.a, true); // True means custom styling for en/et
+        renderOptions(opts, q.a, true); 
     }
 
     function setupTime() {
@@ -438,8 +443,17 @@
         let nextH12 = (h12 % 12) + 1;
         let dig = `${h24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         
+        // Determine time of day suffix from Rigtig Dansk textbook
+        let tod = "";
+        if (h24 >= 5 && h24 < 9) tod = " om morgenen";
+        else if (h24 >= 9 && h24 < 12) tod = " om formiddagen";
+        else if (h24 >= 12 && h24 < 18) tod = " om eftermiddagen";
+        else if (h24 >= 18 && h24 <= 23) tod = " om aftenen";
+        else tod = " om natten";
+
         let numStrs = {1:"et", 2:"to", 3:"tre", 4:"fire", 5:"fem", 6:"seks", 7:"syv", 8:"otte", 9:"ni", 10:"ti", 11:"elleve", 12:"tolv", 20:"tyve"};
         let ans = "", tip = "";
+        
         if(m===0){ ans=`klokken ${numStrs[h12]}`; tip=`On the hour: 'klokken' + number.`; }
         else if(m===15){ ans=`kvart over ${numStrs[h12]}`; tip=`'Kvart over' = 15 mins past.`; }
         else if(m===30){ ans=`halv ${numStrs[nextH12]}`; tip=`'Halv' looks forward to ${nextH12}.`; }
@@ -447,7 +461,22 @@
         else if(m<30){ ans=`${numStrs[m]} over ${numStrs[h12]}`; tip=`'over' for past the hour.`; }
         else { ans=`${numStrs[60-m]} i ${numStrs[nextH12]}`; tip=`'i' for minutes to NEXT hour.`; }
         
-        curObj = { qD: "Hvad er klokken?", qE: "(What time is it?)", pfx: "Den er ", ans: ans, dig: dig, tip: tip };
+        // Add ToD randomly to make it harder
+        if (Math.random() > 0.4) {
+            ans += tod;
+            tip += ` Remember: 05-09 is morgen, 09-12 is formiddag, 12-18 is eftermiddag, 18-24 is aften, and 24-05 is nat.`;
+        }
+        
+        const timePrompts = [
+            { d: "Hvad er klokken?", e: "(What time is it?)", p: "Den er " },
+            { d: "Hvad tid kommer der Nyhederne?", e: "(What time is the news on?)", p: "De kommer " },
+            { d: "Hvad tid står du op?", e: "(What time do you get up?)", p: "Jeg står op " },
+            { d: "Hvad tid har du fri?", e: "(What time do you get off work?)", p: "Jeg har fri " },
+            { d: "Hvornår kører bussen?", e: "(When does the bus leave?)", p: "Den kører " }
+        ];
+
+        let pObj = timePrompts[Math.floor(Math.random() * timePrompts.length)];
+        curObj = { qD: pObj.d, qE: pObj.e, pfx: pObj.p, ans: ans, dig: dig, tip: tip };
         let corStr = curObj.pfx + ans + ".";
         
         if (currentLevel >= 2) {
@@ -473,6 +502,11 @@
             else if(fm===30) fans=`halv ${numStrs[fnH12]}`;
             else if(fm===45) fans=`kvart i ${numStrs[fnH12]}`;
             else fans=`${numStrs[fm]} over ${numStrs[fh12]}`;
+            
+            // Generate a random ToD for the wrong answers too
+            let ftod = [" om morgenen", " om formiddagen", " om eftermiddagen", " om aftenen", " om natten", ""][Math.floor(Math.random() * 6)];
+            fans += ftod;
+
             let fakeStr = curObj.pfx + fans + ".";
             if(!opts.includes(fakeStr)) opts.push(fakeStr);
         }
