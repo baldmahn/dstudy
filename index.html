@@ -270,6 +270,11 @@
     
     const TOTAL_ROUNDS = 50;
 
+    // --- GAME DATA ---
+    const units = ["nul", "en", "to", "tre", "fire", "fem", "seks", "syv", "otte", "ni"];
+    const teens = ["ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten"];
+    const tens = ["", "ti", "tyve", "tredive", "fyrre", "halvtreds", "tres", "halvfjerds", "firs", "halvfems"];
+
     const allQWords = ["Hvad", "Hvem", "Hvorfor", "Hvordan", "Hvis", "Hvilken(t)", "Hvor", "Hvor + adjective", "Hvornår"];
     const wordsDataList = [
         { d: "___ hedder du?", e: "(What is your name?)", a: "Hvad" },
@@ -357,7 +362,6 @@
     function loadNextRound() {
         gAns = false;
         
-        // BUG FIX: Completely clean DOM state from previous categories to prevent leaks
         document.getElementById('game-danish').className = "q-display-medium";
         document.getElementById('game-english').innerText = ""; 
         document.getElementById('game-english').style.display = "block";
