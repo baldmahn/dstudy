@@ -83,7 +83,7 @@
         .dict-link {
             color: inherit; text-decoration: none; border-bottom: 3px dotted var(--btn-mint-hover);
             transition: 0.2s; cursor: pointer;
-            padding: 2px 5px; /* Keep link bounding box tight */
+            padding: 2px 5px; 
             display: inline-block;
         }
         .dict-link:hover { background-color: var(--btn-mint); color: #000; border-radius: 5px; }
@@ -101,8 +101,8 @@
 
         button.option-btn {
             background-color: var(--btn-mint); border: none; 
-            padding: 25px 20px; /* Increased safe click area */
-            min-height: 80px; /* Ensure button is large */
+            padding: 25px 20px; 
+            min-height: 80px; 
             border-radius: 12px; font-size: 1.1rem; cursor: pointer; font-weight: 600;
             color: #444; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             word-wrap: break-word;
@@ -306,17 +306,18 @@
         { w: "uddannelse", a: "en", t: "education", tip: "Words ending in '-else' are almost always 'en'." }
     ];
 
+    // UPDATED with Answer Translations (aE)
     const routineDataList = [
-        { d: "Hvad tid står du op?", e: "(What time do you get up?)", a: "Jeg står op klokken seks." },
-        { d: "Hvad tid går du i seng?", e: "(What time do you go to bed?)", a: "Jeg går i seng ved ellevetiden." },
-        { d: "Hvad tid begynder du at arbejde?", e: "(What time do you start work?)", a: "Det varierer meget." },
-        { d: "Hvad tid får du fri?", e: "(What time do you finish work?)", a: "Jeg får fri klokken fire." },
-        { d: "Hvad tid spiser du morgenmad?", e: "(What time do you eat breakfast?)", a: "Jeg spiser morgenmad klokken syv." },
-        { d: "Hvad tid møder du om morgenen?", e: "(What time do you show up in the morning?)", a: "Jeg møder normalt klokken ni." },
-        { d: "Hvad tid har du frokostpause?", e: "(What time is your lunch break?)", a: "Jeg har frokostpause klokken tolv." },
-        { d: "Hvad tid laver du aftensmad?", e: "(What time do you make dinner?)", a: "Jeg laver aftensmad klokken seks." },
-        { d: "Hvad tid spiser du aftensmad?", e: "(What time do you eat dinner?)", a: "Vi spiser aftensmad halv syv." },
-        { d: "Hvad tid skal du af sted om morgenen?", e: "(What time do you have to leave in the morning?)", a: "Det kommer an på, hvad tid jeg skal møde." }
+        { d: "Hvad tid står du op?", e: "(What time do you get up?)", a: "Jeg står op klokken seks.", aE: "(I get up at 6 o'clock.)" },
+        { d: "Hvad tid går du i seng?", e: "(What time do you go to bed?)", a: "Jeg går i seng ved ellevetiden.", aE: "(I go to bed around 11 o'clock.)" },
+        { d: "Hvad tid begynder du at arbejde?", e: "(What time do you start work?)", a: "Det varierer meget.", aE: "(It varies a lot.)" },
+        { d: "Hvad tid får du fri?", e: "(What time do you finish work?)", a: "Jeg får fri klokken fire.", aE: "(I finish work at 4 o'clock.)" },
+        { d: "Hvad tid spiser du morgenmad?", e: "(What time do you eat breakfast?)", a: "Jeg spiser morgenmad klokken syv.", aE: "(I eat breakfast at 7 o'clock.)" },
+        { d: "Hvad tid møder du om morgenen?", e: "(What time do you show up in the morning?)", a: "Jeg møder normalt klokken ni.", aE: "(I usually show up at 9 o'clock.)" },
+        { d: "Hvad tid har du frokostpause?", e: "(What time is your lunch break?)", a: "Jeg har frokostpause klokken tolv.", aE: "(I have my lunch break at 12 o'clock.)" },
+        { d: "Hvad tid laver du aftensmad?", e: "(What time do you make dinner?)", a: "Jeg laver aftensmad klokken seks.", aE: "(I make dinner at 6 o'clock.)" },
+        { d: "Hvad tid spiser du aftensmad?", e: "(What time do you eat dinner?)", a: "Vi spiser aftensmad halv syv.", aE: "(We eat dinner at half past six.)" },
+        { d: "Hvad tid skal du af sted om morgenen?", e: "(What time do you have to leave in the morning?)", a: "Det kommer an på, hvad tid jeg skal møde.", aE: "(It depends on what time I have to show up.)" }
     ];
 
     const mixedDataList = [
@@ -623,7 +624,8 @@
         if (currentGame === 'numbers') { box.innerHTML = curObj.tip; box.style.display = "block"; }
         if (currentGame === 'articles') { box.innerHTML = `<strong>Translation:</strong> ${curObj.t}<br><br><strong>Tip:</strong> ${curObj.tip}`; box.style.display = "block"; }
         if (currentGame === 'time') { box.innerHTML = curObj.tip; box.style.display = "block"; }
-        if (currentGame === 'routine') { box.innerHTML = `<strong>Meaning:</strong> ${curObj.e}`; box.style.display = "block"; }
+        // NEW EXPLANATION BOX FORMAT FOR ROUTINE (Shows Meaning + Answer Translation)
+        if (currentGame === 'routine') { box.innerHTML = `<strong>Q:</strong> ${curObj.e}<br><br><strong>A:</strong> ${curObj.aE}`; box.style.display = "block"; }
         if (currentGame === 'mixed') { box.innerHTML = `<strong>Spørgsmål:</strong> ${curObj.q}`; box.style.display = "block"; }
 
         document.getElementById('game-next').style.display = "block";
