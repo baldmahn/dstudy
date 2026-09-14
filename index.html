@@ -40,7 +40,6 @@
 
         h1 { font-size: 1.5rem; margin-bottom: 10px; color: #555; }
         
-        /* Accordion Menu Styles */
         .accordion {
             background-color: #f8f9fa; color: #444; cursor: pointer; padding: 18px;
             width: 100%; text-align: left; border: 2px solid #eee; outline: none;
@@ -57,7 +56,6 @@
         }
 
         .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin: 15px 0; }
-        
         @media (min-width: 480px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
 
         .menu-btn {
@@ -144,7 +142,6 @@
             <button class="menu-btn" onclick="startGame('numbers', 1)">Numbers & Math</button>
             <button class="menu-btn" onclick="startGame('articles', 1)">En eller Et?</button>
             <button class="menu-btn" style="background-color: var(--btn-pink);" onclick="startGame('time', 1)">Hvad er klokken?</button>
-            <!-- NEW ROUTINE BUTTON LEVEL 1 -->
             <button class="menu-btn" style="background-color: var(--btn-blue); grid-column: 1 / -1;" onclick="startGame('routine', 1)">Daily Routine & Work</button>
         </div>
     </div>
@@ -156,7 +153,6 @@
             <button class="menu-btn" onclick="startGame('numbers', 2)">Numbers & Math 🔊</button>
             <button class="menu-btn" onclick="startGame('articles', 2)">En eller Et? 🔊</button>
             <button class="menu-btn" style="background-color: var(--btn-pink);" onclick="startGame('time', 2)">Hvad er klokken? 🔊</button>
-            <!-- NEW ROUTINE BUTTON LEVEL 2 -->
             <button class="menu-btn" style="background-color: var(--btn-blue); grid-column: 1 / -1;" onclick="startGame('routine', 2)">Daily Routine & Work 🔊</button>
         </div>
     </div>
@@ -179,9 +175,9 @@
     </div>
     <div class="question-box">
         <span id="audio-icon" class="audio-only-icon" style="display:none;">🎧</span>
-        <div class="q-display-medium" id="game-danish"></div>
-        <div class="q-english" id="game-english"></div>
-        <div class="q-digital" id="game-digital" style="display:none;"></div>
+        <div id="game-danish" class="q-display-medium"></div>
+        <div id="game-english" class="q-english"></div>
+        <div id="game-digital" class="q-digital" style="display:none;"></div>
         <button class="speak-btn" id="game-speak" onclick="speakCurrent()">🔊 Lyt</button>
     </div>
     <div class="options-grid" id="game-options"></div>
@@ -191,7 +187,6 @@
 </div>
 
 <script>
-    // --- ACCORDION LOGIC ---
     document.querySelectorAll('.accordion').forEach(acc => {
         acc.addEventListener("click", function() {
             this.classList.toggle("active-acc");
@@ -200,7 +195,6 @@
         });
     });
 
-    // --- GLOBAL AUDIO & UTILS ---
     let danishVoice = null;
     let currentLevel = 1;
     let currentGame = '';
@@ -259,32 +253,24 @@
     }
 
     function startGame(gameId, level) {
-        if ('speechSynthesis' in window) playAudio(""); // Unlock audio
+        if ('speechSynthesis' in window) playAudio(""); 
         currentLevel = level;
         currentGame = gameId;
         
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screen-game').classList.add('active');
         
-        // Reset UI defaults
-        document.getElementById('game-digital').style.display = 'none';
-        document.getElementById('audio-icon').style.display = 'none';
-        document.getElementById('game-english').style.display = 'block';
-        document.getElementById('game-options').className = 'options-grid';
-        
         if(gameId === 'words') initWords();
         if(gameId === 'numbers') initNumbers();
         if(gameId === 'articles') initArticles();
         if(gameId === 'time') initTime();
-        if(gameId === 'routine') initRoutine(); // Hooked up Daily Routine
+        if(gameId === 'routine') initRoutine();
         if(gameId === 'mixed') initMixed();
     }
     
     const TOTAL_ROUNDS = 50;
 
-    // --- GAME DATA ---
     const allQWords = ["Hvad", "Hvem", "Hvorfor", "Hvordan", "Hvis", "Hvilken(t)", "Hvor", "Hvor + adjective", "Hvornår"];
-    
     const wordsDataList = [
         { d: "___ hedder du?", e: "(What is your name?)", a: "Hvad" },
         { d: "___ kommer du fra?", e: "(Where do you come from?)", a: "Hvor" },
@@ -311,7 +297,6 @@
         { w: "uddannelse", a: "en", t: "education", tip: "Words ending in '-else' are almost always 'en'." }
     ];
 
-    // NEW POOL: Dedicated Routine and Work questions for Level 1 & 2
     const routineDataList = [
         { d: "Hvad tid står du op?", e: "(What time do you get up?)", a: "Jeg står op klokken seks." },
         { d: "Hvad tid går du i seng?", e: "(What time do you go to bed?)", a: "Jeg går i seng ved ellevetiden." },
@@ -340,19 +325,17 @@
         { q: "Hvorfor lærer du dansk?", a: "Fordi jeg bor i Danmark." },
         { q: "Hvad laver du i weekenden?", a: "Det kommer an på, hvad jeg skal." },
         { q: "Hvordan kommer du på arbejde?", a: "Nogle gange tager jeg bussen." },
-        // Mapping the routine answers over to the mixed mode as well
         ...routineDataList.map(r => ({ q: r.d, a: r.a })) 
     ];
 
-    // --- GAME ENGINE ---
     let gIdx = 0, gScore = 0, gData = [], gAns = false, curObj = null;
 
     function initWords() { gData = shuffle([...wordsDataList]); resetEngine(); }
-    function initNumbers() { resetEngine(); } // Dynamic
+    function initNumbers() { resetEngine(); } 
     function initArticles() { gData = shuffle([...artDataList]); resetEngine(); }
-    function initTime() { resetEngine(); } // Dynamic
-    function initRoutine() { gData = shuffle([...routineDataList]); resetEngine(); document.getElementById('game-options').classList.add('full-width'); }
-    function initMixed() { gData = shuffle([...mixedDataList]); resetEngine(); document.getElementById('game-options').classList.add('full-width'); }
+    function initTime() { resetEngine(); } 
+    function initRoutine() { gData = shuffle([...routineDataList]); resetEngine(); }
+    function initMixed() { gData = shuffle([...mixedDataList]); resetEngine(); }
 
     function resetEngine() {
         gIdx = 0; gScore = 0;
@@ -373,10 +356,20 @@
 
     function loadNextRound() {
         gAns = false;
+        
+        // BUG FIX: Completely clean DOM state from previous categories to prevent leaks
+        document.getElementById('game-danish').className = "q-display-medium";
+        document.getElementById('game-english').innerText = ""; 
+        document.getElementById('game-english').style.display = "block";
+        document.getElementById('game-digital').style.display = "none";
+        document.getElementById('audio-icon').style.display = "none";
+        document.getElementById('game-options').className = "options-grid";
+        
         document.getElementById('game-feedback').innerText = "";
         document.getElementById('game-explanation').style.display = "none";
         document.getElementById('game-next').style.display = "none";
         document.getElementById('game-options').innerHTML = "";
+        
         document.getElementById('game-counter').innerText = `${gIdx + 1}/${TOTAL_ROUNDS}`;
         document.getElementById('game-score').innerText = gScore;
 
@@ -388,7 +381,6 @@
         if (currentGame === 'mixed') setupMixed();
     }
 
-    // --- SPECIFIC SETUPS ---
     function setupWords() {
         let q = gData[gIdx % gData.length];
         curObj = { ...q, full: q.d.replace("___", q.a === "Hvor + adjective" ? "Hvor" : q.a) };
@@ -415,10 +407,12 @@
         if (currentLevel >= 2) {
             document.getElementById('game-danish').innerHTML = "Lyt til tallet";
             document.getElementById('audio-icon').style.display = 'block';
+            document.getElementById('game-english').style.display = 'none';
             setTimeout(speakCurrent, 300);
         } else {
             document.getElementById('game-danish').innerHTML = tNum;
             document.getElementById('game-danish').classList.add('q-display-large');
+            document.getElementById('game-english').style.display = 'none';
         }
 
         let opts = [tWord];
@@ -435,18 +429,20 @@
     function setupArticles() {
         let q = gData[gIdx % gData.length];
         curObj = q;
+        document.getElementById('game-options').classList.add('full-width');
         
         if (currentLevel >= 2) {
             document.getElementById('game-danish').innerHTML = "Lyt til ordet";
             document.getElementById('audio-icon').style.display = 'block';
+            document.getElementById('game-english').style.display = 'none';
             setTimeout(speakCurrent, 300);
         } else {
             document.getElementById('game-danish').innerHTML = `___ ${linkify(q.w)}`;
             document.getElementById('game-danish').classList.add('q-display-large');
+            document.getElementById('game-english').style.display = 'none';
         }
 
         let opts = ["en", "et"];
-        document.getElementById('game-options').classList.add('full-width');
         renderOptions(opts, q.a, true); 
     }
 
@@ -528,6 +524,7 @@
     function setupRoutine() {
         let q = gData[gIdx % gData.length];
         curObj = q;
+        document.getElementById('game-options').classList.add('full-width');
         
         if(currentLevel >= 2) {
             document.getElementById('game-danish').innerHTML = "Lyt til spørgsmålet";
@@ -540,7 +537,6 @@
         }
 
         let opts = [q.a];
-        // Pull wrong answers from the general mixed pool to keep things unpredictable
         while (opts.length < 4) {
             let rObj = mixedDataList[Math.floor(Math.random() * mixedDataList.length)];
             if (!opts.includes(rObj.a)) opts.push(rObj.a);
@@ -551,6 +547,7 @@
     function setupMixed() {
         let q = gData[gIdx % gData.length];
         curObj = q;
+        document.getElementById('game-options').classList.add('full-width');
         
         document.getElementById('game-danish').innerHTML = "Lyt til spørgsmålet";
         document.getElementById('audio-icon').style.display = 'block';
@@ -565,7 +562,6 @@
         renderOptions(shuffle(opts), q.a);
     }
 
-    // --- SHARED LOGIC ---
     function renderOptions(opts, correctStr, isArticles = false) {
         opts.forEach(opt => {
             let b = document.createElement('button');
@@ -590,12 +586,11 @@
         }
         document.getElementById('game-score').innerText = gScore;
         
-        // Reveal Text & Tips
         if (currentLevel >= 2) {
             document.getElementById('audio-icon').style.display = 'none';
             if (currentGame === 'words') document.getElementById('game-danish').innerHTML = linkify(curObj.full);
             if (currentGame === 'numbers') { document.getElementById('game-danish').innerHTML = `${curObj.num} = ${linkify(curObj.word)}`; document.getElementById('game-danish').classList.add('q-display-large'); }
-            if (currentGame === 'articles') document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`;
+            if (currentGame === 'articles') { document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`; document.getElementById('game-danish').classList.add('q-display-large'); }
             if (currentGame === 'time') { document.getElementById('game-danish').innerHTML = linkify(curObj.qD); document.getElementById('game-digital').style.display = 'inline-block'; document.getElementById('game-digital').innerText = curObj.dig; }
             if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
             if (currentGame === 'mixed') document.getElementById('game-danish').innerHTML = linkify(curObj.q);
@@ -606,7 +601,6 @@
              if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
         }
         
-        // Explanations
         let box = document.getElementById('game-explanation');
         if (currentGame === 'words') { box.innerHTML = getQWordTip(cor); box.style.display = "block"; }
         if (currentGame === 'numbers') { box.innerHTML = curObj.tip; box.style.display = "block"; }
@@ -630,7 +624,6 @@
         playAudio(txt);
     }
     
-    // Numbers Generator Helpers
     function getNumWord(num) {
         if(num < 10) return units[num];
         if(num < 20) return teens[num-10];
@@ -638,6 +631,7 @@
         let u = num%10, t = Math.floor(num/10);
         return u === 0 ? tens[t] : units[u] + "og" + tens[t];
     }
+    
     function getNumTip(num) {
         if(num < 10) return `<strong>${num}:</strong> Basic numbers 0-9.`;
         if(num < 20) return `<strong>${num}:</strong> Irregular 'teens'.`;
@@ -646,6 +640,7 @@
         if(t < 5) return `<strong>${num}:</strong> Tens under 50 end in '-ve' or '-re'. (Ones digit always first).`;
         return `<strong>${num}:</strong> Base-20 counting system above 40.`;
     }
+    
     function getQWordTip(w) {
         const t = {"Hvad":"What","Hvem":"Who","Hvorfor":"Why","Hvordan":"How","Hvor":"Where","Hvornår":"When","Hvilken(t)":"Which","Hvis":"Whose","Hvor + adjective":"How [much/fast/long]"};
         return `<strong>${w}</strong>: Translates to ${t[w] || ""}.`;
