@@ -83,6 +83,8 @@
         .dict-link {
             color: inherit; text-decoration: none; border-bottom: 3px dotted var(--btn-mint-hover);
             transition: 0.2s; cursor: pointer;
+            padding: 2px 5px; /* Keep link bounding box tight */
+            display: inline-block;
         }
         .dict-link:hover { background-color: var(--btn-mint); color: #000; border-radius: 5px; }
 
@@ -98,10 +100,13 @@
         .options-grid.full-width { grid-template-columns: 1fr; }
 
         button.option-btn {
-            background-color: var(--btn-mint); border: none; padding: 18px 15px;
+            background-color: var(--btn-mint); border: none; 
+            padding: 25px 20px; /* Increased safe click area */
+            min-height: 80px; /* Ensure button is large */
             border-radius: 12px; font-size: 1.1rem; cursor: pointer; font-weight: 600;
             color: #444; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             word-wrap: break-word;
+            display: flex; justify-content: center; align-items: center; text-align: center;
         }
         button.option-btn:disabled { cursor: not-allowed; transform: none; opacity: 0.9; }
         .correct-btn { background-color: var(--correct) !important; color: #000 !important; border: 2px solid #4CAF50 !important; }
@@ -270,7 +275,6 @@
     
     const TOTAL_ROUNDS = 50;
 
-    // --- GAME DATA ---
     const units = ["nul", "en", "to", "tre", "fire", "fem", "seks", "syv", "otte", "ni"];
     const teens = ["ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten"];
     const tens = ["", "ti", "tyve", "tredive", "fyrre", "halvtreds", "tres", "halvfjerds", "firs", "halvfems"];
@@ -443,7 +447,8 @@
         } else {
             document.getElementById('game-danish').innerHTML = `___ ${linkify(q.w)}`;
             document.getElementById('game-danish').classList.add('q-display-large');
-            document.getElementById('game-english').style.display = 'none';
+            document.getElementById('game-english').innerText = `(${q.t})`;
+            document.getElementById('game-english').style.display = 'block';
         }
 
         let opts = ["en", "et"];
@@ -594,14 +599,22 @@
             document.getElementById('audio-icon').style.display = 'none';
             if (currentGame === 'words') document.getElementById('game-danish').innerHTML = linkify(curObj.full);
             if (currentGame === 'numbers') { document.getElementById('game-danish').innerHTML = `${curObj.num} = ${linkify(curObj.word)}`; document.getElementById('game-danish').classList.add('q-display-large'); }
-            if (currentGame === 'articles') { document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`; document.getElementById('game-danish').classList.add('q-display-large'); }
+            if (currentGame === 'articles') { 
+                document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`; 
+                document.getElementById('game-danish').classList.add('q-display-large'); 
+                document.getElementById('game-english').innerText = `(${curObj.t})`;
+                document.getElementById('game-english').style.display = 'block';
+            }
             if (currentGame === 'time') { document.getElementById('game-danish').innerHTML = linkify(curObj.qD); document.getElementById('game-digital').style.display = 'inline-block'; document.getElementById('game-digital').innerText = curObj.dig; }
             if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
             if (currentGame === 'mixed') document.getElementById('game-danish').innerHTML = linkify(curObj.q);
         } else {
              if (currentGame === 'words') document.getElementById('game-danish').innerHTML = linkify(curObj.full);
              if (currentGame === 'numbers') document.getElementById('game-danish').innerHTML = `${curObj.num} = ${linkify(curObj.word)}`;
-             if (currentGame === 'articles') document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`;
+             if (currentGame === 'articles') {
+                 document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`;
+                 document.getElementById('game-english').innerText = `(${curObj.t})`;
+             }
              if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
         }
         
