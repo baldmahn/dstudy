@@ -15,6 +15,8 @@
             --btn-pink-hover: #ffcba4;
             --btn-purple: #e2d9f3;
             --btn-purple-hover: #d1c4e9;
+            --btn-blue: #a3c2fa;
+            --btn-blue-hover: #8babeb;
             --correct: #c7ceea; 
             --incorrect: #ffb7b2; 
         }
@@ -142,6 +144,8 @@
             <button class="menu-btn" onclick="startGame('numbers', 1)">Numbers & Math</button>
             <button class="menu-btn" onclick="startGame('articles', 1)">En eller Et?</button>
             <button class="menu-btn" style="background-color: var(--btn-pink);" onclick="startGame('time', 1)">Hvad er klokken?</button>
+            <!-- NEW ROUTINE BUTTON LEVEL 1 -->
+            <button class="menu-btn" style="background-color: var(--btn-blue); grid-column: 1 / -1;" onclick="startGame('routine', 1)">Daily Routine & Work</button>
         </div>
     </div>
 
@@ -152,6 +156,8 @@
             <button class="menu-btn" onclick="startGame('numbers', 2)">Numbers & Math 🔊</button>
             <button class="menu-btn" onclick="startGame('articles', 2)">En eller Et? 🔊</button>
             <button class="menu-btn" style="background-color: var(--btn-pink);" onclick="startGame('time', 2)">Hvad er klokken? 🔊</button>
+            <!-- NEW ROUTINE BUTTON LEVEL 2 -->
+            <button class="menu-btn" style="background-color: var(--btn-blue); grid-column: 1 / -1;" onclick="startGame('routine', 2)">Daily Routine & Work 🔊</button>
         </div>
     </div>
 
@@ -270,6 +276,7 @@
         if(gameId === 'numbers') initNumbers();
         if(gameId === 'articles') initArticles();
         if(gameId === 'time') initTime();
+        if(gameId === 'routine') initRoutine(); // Hooked up Daily Routine
         if(gameId === 'mixed') initMixed();
     }
     
@@ -277,6 +284,7 @@
 
     // --- GAME DATA ---
     const allQWords = ["Hvad", "Hvem", "Hvorfor", "Hvordan", "Hvis", "Hvilken(t)", "Hvor", "Hvor + adjective", "Hvornår"];
+    
     const wordsDataList = [
         { d: "___ hedder du?", e: "(What is your name?)", a: "Hvad" },
         { d: "___ kommer du fra?", e: "(Where do you come from?)", a: "Hvor" },
@@ -303,21 +311,24 @@
         { w: "uddannelse", a: "en", t: "education", tip: "Words ending in '-else' are almost always 'en'." }
     ];
 
-    // Expanded Mixed Q&A Pool with newly added Schedule & Routine Sentences
+    // NEW POOL: Dedicated Routine and Work questions for Level 1 & 2
+    const routineDataList = [
+        { d: "Hvad tid står du op?", e: "(What time do you get up?)", a: "Jeg står op klokken seks." },
+        { d: "Hvad tid går du i seng?", e: "(What time do you go to bed?)", a: "Jeg går i seng ved ellevetiden." },
+        { d: "Hvad tid begynder du at arbejde?", e: "(What time do you start work?)", a: "Det varierer meget." },
+        { d: "Hvad tid får du fri?", e: "(What time do you finish work?)", a: "Jeg får fri klokken fire." },
+        { d: "Hvad tid spiser du morgenmad?", e: "(What time do you eat breakfast?)", a: "Jeg spiser morgenmad klokken syv." },
+        { d: "Hvad tid møder du om morgenen?", e: "(What time do you show up in the morning?)", a: "Jeg møder normalt klokken ni." },
+        { d: "Hvad tid har du frokostpause?", e: "(What time is your lunch break?)", a: "Jeg har frokostpause klokken tolv." },
+        { d: "Hvad tid laver du aftensmad?", e: "(What time do you make dinner?)", a: "Jeg laver aftensmad klokken seks." },
+        { d: "Hvad tid spiser du aftensmad?", e: "(What time do you eat dinner?)", a: "Vi spiser aftensmad halv syv." },
+        { d: "Hvad tid skal du af sted om morgenen?", e: "(What time do you have to leave in the morning?)", a: "Det kommer an på, hvad tid jeg skal møde." }
+    ];
+
     const mixedDataList = [
         { q: "Hvad er klokken?", a: "Den er halv et." },
         { q: "Hvornår kører toget?", a: "Det kører kvart i ti." },
         { q: "Hvad tid kommer der Nyhederne på TV2?", a: "Klokken ti om aftenen." },
-        { q: "Hvad tid står du op?", a: "Jeg står op klokken seks." },
-        { q: "Hvad tid går du i seng?", a: "Jeg går i seng ved ellevetiden." },
-        { q: "Hvad tid begynder du at arbejde?", a: "Det varierer meget." },
-        { q: "Hvad tid får du fri?", a: "Jeg får fri klokken fire." },
-        { q: "Hvad tid spiser du morgenmad?", a: "Jeg spiser morgenmad klokken syv." },
-        { q: "Hvad tid skal du af sted om morgenen?", a: "Det kommer an på, hvad tid jeg skal møde." },
-        { q: "Hvad tid møder du om morgenen?", a: "Jeg møder normalt klokken ni." },
-        { q: "Hvad tid har du frokostpause?", a: "Jeg har frokostpause klokken tolv." },
-        { q: "Hvad tid laver du aftensmad?", a: "Jeg laver aftensmad klokken seks." },
-        { q: "Hvad tid spiser du aftensmad?", a: "Vi spiser aftensmad halv syv." },
         { q: "Hvad betyder 'vist'?", a: "Det betyder 'probably'." },
         { q: "Hvad betyder 'snart'?", a: "Det betyder 'soon'." },
         { q: "Hvad betyder 'næsten'?", a: "Det betyder 'almost'." },
@@ -328,7 +339,9 @@
         { q: "Hvilken computer bruger du?", a: "Jeg bruger en Asus ROG." },
         { q: "Hvorfor lærer du dansk?", a: "Fordi jeg bor i Danmark." },
         { q: "Hvad laver du i weekenden?", a: "Det kommer an på, hvad jeg skal." },
-        { q: "Hvordan kommer du på arbejde?", a: "Nogle gange tager jeg bussen." }
+        { q: "Hvordan kommer du på arbejde?", a: "Nogle gange tager jeg bussen." },
+        // Mapping the routine answers over to the mixed mode as well
+        ...routineDataList.map(r => ({ q: r.d, a: r.a })) 
     ];
 
     // --- GAME ENGINE ---
@@ -338,6 +351,7 @@
     function initNumbers() { resetEngine(); } // Dynamic
     function initArticles() { gData = shuffle([...artDataList]); resetEngine(); }
     function initTime() { resetEngine(); } // Dynamic
+    function initRoutine() { gData = shuffle([...routineDataList]); resetEngine(); document.getElementById('game-options').classList.add('full-width'); }
     function initMixed() { gData = shuffle([...mixedDataList]); resetEngine(); document.getElementById('game-options').classList.add('full-width'); }
 
     function resetEngine() {
@@ -370,6 +384,7 @@
         if (currentGame === 'numbers') setupNumbers();
         if (currentGame === 'articles') setupArticles();
         if (currentGame === 'time') setupTime();
+        if (currentGame === 'routine') setupRoutine();
         if (currentGame === 'mixed') setupMixed();
     }
 
@@ -443,7 +458,6 @@
         let nextH12 = (h12 % 12) + 1;
         let dig = `${h24.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         
-        // Determine time of day suffix from Rigtig Dansk textbook
         let tod = "";
         if (h24 >= 5 && h24 < 9) tod = " om morgenen";
         else if (h24 >= 9 && h24 < 12) tod = " om formiddagen";
@@ -461,7 +475,6 @@
         else if(m<30){ ans=`${numStrs[m]} over ${numStrs[h12]}`; tip=`'over' for past the hour.`; }
         else { ans=`${numStrs[60-m]} i ${numStrs[nextH12]}`; tip=`'i' for minutes to NEXT hour.`; }
         
-        // Add ToD randomly to make it harder
         if (Math.random() > 0.4) {
             ans += tod;
             tip += ` Remember: 05-09 is morgen, 09-12 is formiddag, 12-18 is eftermiddag, 18-24 is aften, and 24-05 is nat.`;
@@ -503,7 +516,6 @@
             else if(fm===45) fans=`kvart i ${numStrs[fnH12]}`;
             else fans=`${numStrs[fm]} over ${numStrs[fh12]}`;
             
-            // Generate a random ToD for the wrong answers too
             let ftod = [" om morgenen", " om formiddagen", " om eftermiddagen", " om aftenen", " om natten", ""][Math.floor(Math.random() * 6)];
             fans += ftod;
 
@@ -511,6 +523,29 @@
             if(!opts.includes(fakeStr)) opts.push(fakeStr);
         }
         renderOptions(shuffle(opts), corStr);
+    }
+
+    function setupRoutine() {
+        let q = gData[gIdx % gData.length];
+        curObj = q;
+        
+        if(currentLevel >= 2) {
+            document.getElementById('game-danish').innerHTML = "Lyt til spørgsmålet";
+            document.getElementById('audio-icon').style.display = 'block';
+            document.getElementById('game-english').style.display = 'none';
+            setTimeout(speakCurrent, 300);
+        } else {
+            document.getElementById('game-danish').innerHTML = linkify(q.d);
+            document.getElementById('game-english').innerText = q.e;
+        }
+
+        let opts = [q.a];
+        // Pull wrong answers from the general mixed pool to keep things unpredictable
+        while (opts.length < 4) {
+            let rObj = mixedDataList[Math.floor(Math.random() * mixedDataList.length)];
+            if (!opts.includes(rObj.a)) opts.push(rObj.a);
+        }
+        renderOptions(shuffle(opts), q.a);
     }
 
     function setupMixed() {
@@ -562,11 +597,13 @@
             if (currentGame === 'numbers') { document.getElementById('game-danish').innerHTML = `${curObj.num} = ${linkify(curObj.word)}`; document.getElementById('game-danish').classList.add('q-display-large'); }
             if (currentGame === 'articles') document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`;
             if (currentGame === 'time') { document.getElementById('game-danish').innerHTML = linkify(curObj.qD); document.getElementById('game-digital').style.display = 'inline-block'; document.getElementById('game-digital').innerText = curObj.dig; }
+            if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
             if (currentGame === 'mixed') document.getElementById('game-danish').innerHTML = linkify(curObj.q);
         } else {
              if (currentGame === 'words') document.getElementById('game-danish').innerHTML = linkify(curObj.full);
              if (currentGame === 'numbers') document.getElementById('game-danish').innerHTML = `${curObj.num} = ${linkify(curObj.word)}`;
              if (currentGame === 'articles') document.getElementById('game-danish').innerHTML = `${curObj.a} ${linkify(curObj.w)}`;
+             if (currentGame === 'routine') document.getElementById('game-danish').innerHTML = linkify(curObj.d);
         }
         
         // Explanations
@@ -575,6 +612,7 @@
         if (currentGame === 'numbers') { box.innerHTML = curObj.tip; box.style.display = "block"; }
         if (currentGame === 'articles') { box.innerHTML = `<strong>Translation:</strong> ${curObj.t}<br><br><strong>Tip:</strong> ${curObj.tip}`; box.style.display = "block"; }
         if (currentGame === 'time') { box.innerHTML = curObj.tip; box.style.display = "block"; }
+        if (currentGame === 'routine') { box.innerHTML = `<strong>Meaning:</strong> ${curObj.e}`; box.style.display = "block"; }
         if (currentGame === 'mixed') { box.innerHTML = `<strong>Spørgsmål:</strong> ${curObj.q}`; box.style.display = "block"; }
 
         document.getElementById('game-next').style.display = "block";
@@ -587,6 +625,7 @@
         if (currentGame === 'numbers') txt = curObj.word;
         if (currentGame === 'articles') txt = gAns ? `${curObj.a} ${curObj.w}` : curObj.w;
         if (currentGame === 'time') txt = gAns ? `${curObj.qD} ... ${curObj.pfx}${curObj.ans}` : curObj.qD;
+        if (currentGame === 'routine') txt = gAns ? `${curObj.d} ... ${curObj.a}` : curObj.d;
         if (currentGame === 'mixed') txt = gAns ? `${curObj.q} ... ${curObj.a}` : curObj.q;
         playAudio(txt);
     }
